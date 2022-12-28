@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout/layout :: head}">
+</head>
+
+<body>
+	<header th:replace="~{layout/layout :: header}"></header>
+	<div class="container py-4">
+		<div class="card bg-light">
+			<div class="card-header" th:text="${titulo}"></div>
+			<div class="card-body">
+				<h4 class="card-title">
+					<a class="btn btn-primary btn-xs"
+						th:href="@{'/clientes/ver/' + ${factura.cliente.idCliente}}">&laquo; volver</a>
+				</h4>
+				<h5>Datos del cliente</h5>
+				<ul class="list-group">
+					<li class="list-group-item" th:text="${factura.cliente.nombre}"></li>
+					<li class="list-group-item" th:text="${factura.cliente.apellido}"></li>
+					<li class="list-group-item" th:text="${factura.cliente.email}"></li>
+					<li class="list-group-item" th:text="${factura.cliente.createdAt}"></li>
+				</ul>
+
+				<h5>Datos de la factura</h5>
+				<ul class="list-group">
+					<li class="list-group-item" th:text="'Folio: ' + ${factura.idFactura}"></li>
+					<li class="list-group-item" th:text="'Descripcion: ' + ${factura.descripcion}"></li>
+					<li class="list-group-item" th:text="'Fecha: ' + ${factura.createdAt}"></li>
+				</ul>
+
+				<div class="alert alert-info my-4" th:if="${#lists.isEmpty(factura.items)}"
+					th:text="'No hay lineas para la factura ' + ${factura.descripcion}">
+				</div>
+
+				<table th:if="${not #lists.isEmpty(factura.items)}" class="table table-bordered table-striped my-4">
+					<thead class="thead-dark">
+						<tr>
+							<th>Producto</th>
+							<th>Precio</th>
+							<th>Cantidad</th>
+							<th>Total</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="i: ${factura.items}">
+							<td th:text="${i.producto.nombre}"></td>
+							<td th:text="${i.producto.precio}"></td>
+							<td th:text="${i.cantidad}"></td>
+							<td th:text="${i.calcularImporte}"></td>
+						</tr>
+					</tbody>
+				</table>
+
+				<h5 class="float-right">
+					Grand total <span th:text="${factura.total}" class="badge bg-secondary"></span>
+				</h5>
+
+				<div class="card border-info mb-4" style="max-width: 20rem;">
+					<div class="card-header">Observaciones</div>
+					<div class="card-body">
+						<p class="card-text" th:text="${factura.observaciones}"
+							th:if="${not #strings.isEmpty(factura.observaciones)}"></p>
+						<h4 class="card-title" th:if="${#strings.isEmpty(factura.observaciones)}">No tiene observaciones
+						</h4>
+					</div>
+				</div>
+
+				<h4 class="card-title">
+					<a class="btn btn-primary btn-xs"
+						th:href="@{'/clientes/ver/' + ${factura.cliente.idCliente}}">&laquo; volver</a>
+				</h4>
+			</div>
+		</div>
+	</div>
+	<footer th:replace="~{layout/layout :: footer}"></footer>
+</body>
+
+</html>

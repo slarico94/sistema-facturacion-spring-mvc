@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout/layout :: head}">
+</head>
+
+<body>
+	<header th:replace="~{layout/layout :: header}"></header>
+	<div class="container py-4">
+		<div class="card bg-light">
+			<div class="card-header" th:text="${titulo}"></div>
+			<div class="card-body">
+				<h4 class="card-title">
+					<a th:href="@{/clientes/form}" class="btn btn-success btn-xs">Crear nuevo cliente</a>
+				</h4>
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Nombre</th>
+							<th>Apellido</th>
+							<th>Email</th>
+							<th>Fecha</th>
+							<th>Crear factura</th>
+							<th>Acciones</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="c: ${clientes}">
+							<td><a th:href="@{/clientes/ver/} + ${c.idCliente}" th:text="${c.idCliente}"></a></td>
+							<td th:text="${c.nombre}"></td>
+							<td th:text="${c.apellido}"></td>
+							<td th:text="${c.email}"></td>
+							<td th:text="${c.createdAt}"></td>
+							<td><a class="btn btn-secondary" th:href="@{'/factura/form/' + ${c.idCliente}}"
+									th:text="'Crear factura'"></a></td>
+							<td><a class="btn btn-primary btn-xs"
+									th:href="@{/clientes/form/} + ${c.idCliente}">Editar</a></td>
+							<td><a class="btn btn-danger btn-xs"
+									th:href="@{/clientes/eliminar/} + ${c.idCliente}">Eliminar</a></td>
+						</tr>
+					</tbody>
+				</table>
+
+				<nav th:replace="~{paginator-nav :: paginator}"></nav>
+			</div>
+		</div>
+	</div>
+	<footer th:replace="~{layout/layout :: footer}"></footer>
+</body>
+
+</html>

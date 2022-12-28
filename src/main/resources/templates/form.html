@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout/layout :: head}">
+</head>
+
+<body>
+	<header th:replace="~{layout/layout :: header}"></header>
+	<div class="container py-4">
+		<div class="card bg-light">
+			<div class="card-header" th:text="${titulo}"></div>
+			<div class="card-body">
+				<div th:object="${cliente}" th:remove="tag">
+					<ul th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+						<li th:each="e: ${#fields.errors('*')}" th:text="${e}"></li>
+					</ul>
+				</div>
+				<form th:action="@{/clientes/form}" th:object="${cliente}" method="post" autocomplete="off" enctype="multipart/form-data">
+					<!--<input class="form-control" type="hidden" id="idcliente" th:field="*{idCliente}" />-->
+					<div class="form-group">
+						<label for="nombre">Nombre</label>
+						<div>
+							<input class="form-control" type="text" id="nombre" th:field="*{nombre}" />
+						</div>
+						<div class="text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+					</div>
+					<div class="form-group">
+						<label for="apellido">Apellido</label>
+						<div>
+							<input class="form-control" type="text" id="apellido" th:field="*{apellido}" />
+						</div>
+						<div class="text-danger" th:if="${#fields.hasErrors('apellido')}" th:errors="*{apellido}"></div>
+					</div>
+					<div class="form-group">
+						<label for="email">Email</label>
+						<div>
+							<input class="form-control" type="text" id="email" th:field="*{email}" />
+						</div>
+						<div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+					</div>
+					<div class="form-group">
+						<label for="createdAt">Fecha creación</label>
+						<div>
+							<input class="form-control" type="date" id="createdAt" th:field="*{createdAt}" />
+						</div>
+						<div class="text-danger" th:if="${#fields.hasErrors('createdAt')}" th:errors="*{createdAt}">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="file">Foto</label>
+						<div>
+							<input class="form-control" name="file" type="file" id="file"/>
+						</div>
+					</div>
+					<div>
+						<button type="submit" value="Enviar!" class="btn btn-primary">Enviar!</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<footer th:replace="~{layout/layout :: footer}"></footer>
+</body>
+
+</html>

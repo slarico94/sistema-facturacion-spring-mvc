@@ -13,6 +13,7 @@
 				<h4 class="card-title">
 					<a class="btn btn-primary btn-xs"
 						th:href="@{'/clientes/ver/' + ${factura.cliente.idCliente}}">&laquo; volver</a>
+					<a class="btn btn-danger btn-xs float-right" th:href="@{'/factura/ver/' + ${factura.idFactura}(format=pdf)}">PDF</a>
 				</h4>
 				<h5>Datos del cliente</h5>
 				<ul class="list-group">

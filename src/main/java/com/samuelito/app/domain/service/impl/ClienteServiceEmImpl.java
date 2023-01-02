@@ -60,4 +60,10 @@ public class ClienteServiceEmImpl implements IClienteService {
 		return null;
 	}
 
+	@Override
+	public Cliente findByIdClienteWithFacturaWithItemFacturaWithProducto(Long idCliente) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

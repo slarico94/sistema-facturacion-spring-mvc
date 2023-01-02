@@ -1,12 +1,23 @@
 package com.samuelito.app.controller;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,11 +38,14 @@ import com.samuelito.app.domain.service.IClienteService;
 import com.samuelito.app.domain.service.IUploadFileService;
 import com.samuelito.app.util.paginator.PageRender;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequestMapping("/clientes")
 @SessionAttributes("cliente")
+@Slf4j
 public class ClienteController {
 
 	@Autowired
@@ -40,15 +54,19 @@ public class ClienteController {
 
 	@Autowired
 	private IUploadFileService uploadFileService;
+	
+	@Autowired
+	private MessageSource messageSource;
 
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
 		// binder.registerCustomEditor(LocalDateTime.class, createdAtEditor);
 	}
 
+	@PreAuthorize("hasRole('ROLE_USER')")
 	@GetMapping("/ver/{id}")
 	public String ver(@PathVariable Long id, Model model, RedirectAttributes flash) {
-		Cliente cliente = clienteService.getClienteById(id);
+		Cliente cliente = clienteService.findByIdClienteWithFacturaWithItemFacturaWithProducto(id);
 		if (cliente == null) {
 			flash.addFlashAttribute("error", "El cliente no existe en la base de datos");
 			return "redirect:/clientes/listar";
@@ -59,16 +77,45 @@ public class ClienteController {
 	}
 
 	@GetMapping("/listar")
-	public String listarClientes(@RequestParam(name = "page", defaultValue = "0") int page, Model model) {
+	public String listarClientes(
+			@RequestParam(name = "page", defaultValue = "0") int page, 
+			Model model,
+			Authentication authentication,
+			HttpServletRequest request,
+			Locale locale) {
+		if (authentication != null) {
+			log.info("Usuario autenticado: {}", authentication.getName());
+		}
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth != null) {
+			log.info("Usuario autenticado con security context holder: {}", auth.getName());
+		}
+		if (hasRole("ROLE_ADMIN")) {
+			log.info("Hola {} tienes acceso de ADMIN", auth.getName());
+		} else {
+			log.info("Hola {} NO tienes acceso de ADMIN", auth.getName());
+		}
+		SecurityContextHolderAwareRequestWrapper securityContext = new SecurityContextHolderAwareRequestWrapper(request, "ROLE_");
+		if (securityContext.isUserInRole("ADMIN")) {
+			log.info("Hola {} tienes acceso de ADMIN usando SecurityContextHolderAwareRequestWrapper", auth.getName());
+		} else {
+			log.info("Hola {} NO tienes acceso de ADMIN usando SecurityContextHolderAwareRequestWrapper", auth.getName());
+		}
+		if (request.isUserInRole("ROLE_ADMIN")) {
+			log.info("Hola {} tienes acceso de ADMIN usando HttpServletRequest", auth.getName());
+		} else {
+			log.info("Hola {} NO tienes acceso de ADMIN usando HttpServletRequest", auth.getName());
+		}
 		Pageable pageRequest = PageRequest.of(page, 5);
 		Page<Cliente> clientes = clienteService.getAllClientesPageable(pageRequest);
 		PageRender<Cliente> pageRender = new PageRender<>("/clientes/listar", clientes);
-		model.addAttribute("titulo", "Listado de clientes");
+		model.addAttribute("titulo", messageSource.getMessage("text.cliente.listar.titulo", null, locale));
 		model.addAttribute("clientes", clientes);
 		model.addAttribute("page", pageRender);
 		return "listar";
 	}
 
+	@Secured("ROLE_ADMIN")
 	@GetMapping("/form")
 	public String crear(Model model) {
 		Cliente cliente = new Cliente();
@@ -77,6 +124,7 @@ public class ClienteController {
 		return "form";
 	}
 
+	@Secured("ROLE_ADMIN")
 	@PostMapping("/form")
 	public String guardar(@Valid Cliente cliente, BindingResult result, Model model,
 			@RequestParam("file") MultipartFile foto, RedirectAttributes flash, SessionStatus status) {
@@ -106,6 +154,7 @@ public class ClienteController {
 		return "redirect:/clientes/listar";
 	}
 
+	@Secured("ROLE_ADMIN")
 	@GetMapping("/form/{id}")
 	public String editar(@PathVariable Long id, RedirectAttributes flash, Model model) {
 		Cliente cliente = clienteService.getClienteById(id);
@@ -115,6 +164,7 @@ public class ClienteController {
 		return "form";
 	}
 
+	@Secured("ROLE_ADMIN")
 	@GetMapping("/eliminar/{id}")
 	public String eliminar(@PathVariable Long id, RedirectAttributes flash) {
 		Cliente cliente = clienteService.getClienteById(id);
@@ -126,6 +176,23 @@ public class ClienteController {
 
 		flash.addFlashAttribute("success", "Cliente eliminado con éxito");
 		return "redirect:/clientes/listar";
+	}
+	
+	private boolean hasRole(String role) {
+		SecurityContext ctx = SecurityContextHolder.getContext();
+		if (ctx == null) {
+			return false;
+		}
+		Authentication auth = ctx.getAuthentication();
+		if (auth == null) {
+			return false;
+		}
+		Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
+		/*return authorities.stream().anyMatch(au -> {
+			log.info("{} tu rol es: {}", auth.getName(), au.getAuthority());
+			return au.getAuthority().equals(role);
+		});*/
+		return authorities.contains(new SimpleGrantedAuthority(role));
 	}
 
 }

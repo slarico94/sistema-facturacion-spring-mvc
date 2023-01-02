@@ -50,4 +50,10 @@ public class ClienteServiceImpl implements IClienteService {
 		return clienteRepository.findAll(pageable);
 	}
 
+	@Override
+	public Cliente findByIdClienteWithFacturaWithItemFacturaWithProducto(Long idCliente) {
+		return clienteRepository.findByIdClienteWithFacturaWithItemFacturaWithProducto(idCliente)
+				.orElse(null);
+	}
+
 }

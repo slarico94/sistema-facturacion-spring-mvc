@@ -5,6 +5,7 @@ import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,6 +30,7 @@ import com.samuelito.app.domain.service.IProductoService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 @Controller
 @RequestMapping("/factura")
 @SessionAttributes("factura")
@@ -46,7 +48,7 @@ public class FacturaController {
 
 	@GetMapping("/ver/{id}")
 	public String ver(@PathVariable("id") Long idFactura, Model model, RedirectAttributes flash) {
-		Factura factura = facturaService.findFacturaById(idFactura);
+		Factura factura = facturaService.fetchByIdFacturaWithClienteWithItemFacturaWithProducto(idFactura);
 		if (factura == null) {
 			flash.addFlashAttribute("error", "La factura no existe en la base de datos");
 			return "redirect:/clientes/listar";

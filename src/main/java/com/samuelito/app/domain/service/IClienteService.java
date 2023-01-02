@@ -20,4 +20,6 @@ public interface IClienteService {
 	void deleteClienteById(Long idCliente);
 	
 	Page<Cliente> getAllClientesPageable(Pageable pageable);
+	
+	Cliente findByIdClienteWithFacturaWithItemFacturaWithProducto(Long idCliente);
 }

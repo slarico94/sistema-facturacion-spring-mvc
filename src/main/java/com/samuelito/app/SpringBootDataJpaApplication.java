@@ -13,6 +13,7 @@ public class SpringBootDataJpaApplication implements CommandLineRunner {
 	@Autowired
 	private IUploadFileService uploadFileService;
 
+
 	public static void main(String[] args) {
 		SpringApplication.run(SpringBootDataJpaApplication.class, args);
 	}

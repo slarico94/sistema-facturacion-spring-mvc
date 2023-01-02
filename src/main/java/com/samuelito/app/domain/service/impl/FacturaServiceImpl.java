@@ -31,4 +31,10 @@ public class FacturaServiceImpl implements IFacturaService {
 		facturaRepository.deleteById(idFactura);
 	}
 
+	@Override
+	public Factura fetchByIdFacturaWithClienteWithItemFacturaWithProducto(Long idFactura) {
+		return facturaRepository.fetchByIdFacturaWithClienteWithItemFacturaWithProducto(idFactura)
+				.orElse(null);
+	}
+
 }

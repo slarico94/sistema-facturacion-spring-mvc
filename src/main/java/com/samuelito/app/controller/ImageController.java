@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ public class ImageController {
 	@Autowired
 	private IUploadFileService uploadFileService;
 
+	@Secured("ROLE_USER")
 	@GetMapping("/uploads/{filename:.+}")
 	public ResponseEntity<Resource> verFotoCliente(@PathVariable String filename) {
 		Resource res = null;
@@ -34,6 +36,11 @@ public class ImageController {
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + res.getFilename() + "\"")
 				.body(res);
 
+	}
+	
+	@GetMapping({"/", ""})
+	public String index() {
+		return "redirect:/clientes/listar";
 	}
 
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head th:replace="~{layout/layout :: head}">
 </head>
@@ -10,7 +10,7 @@
 		<div class="card bg-light">
 			<div class="card-header" th:text="${titulo}"></div>
 			<div class="card-body">
-				<h4><a class="btn btn-primary btn-xs" th:href="@{'/factura/form/' + ${cliente.idCliente}}"
+				<h4><a sec:authorize="hasRole('ROLE_ADMIN')" class="btn btn-primary btn-xs" th:href="@{'/factura/form/' + ${cliente.idCliente}}"
 						th:text="'Crear factura'"></a></h4>
 				<img th:if="${cliente.foto != null}" class="img-thumbnail rounded float-left" style="max-width: 25%;"
 					th:src="@{'/uploads/' + ${cliente.foto}}" />
@@ -33,8 +33,8 @@
 							<th>Descripcion</th>
 							<th>Fecha</th>
 							<th>Total</th>
-							<th>Ver</th>
-							<th>Eliminar</th>
+							<th sec:authorize="hasRole('ROLE_ADMIN')">Ver</th>
+							<th sec:authorize="hasRole('ROLE_ADMIN')">Eliminar</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -43,9 +43,9 @@
 							<td th:text="${f.descripcion}"></td>
 							<td th:text="${f.createdAt}"></td>
 							<td th:text="${f.total}"></td>
-							<td><a th:href="@{'/factura/ver/' + ${f.idFactura}}"
+							<td sec:authorize="hasRole('ROLE_ADMIN')"><a th:href="@{'/factura/ver/' + ${f.idFactura}}"
 									class="btn btn-xs btn-secondary">detalle</a></td>
-							<td><a th:href="@{'/factura/eliminar/' + ${f.idFactura}}"
+							<td sec:authorize="hasRole('ROLE_ADMIN')"><a th:href="@{'/factura/eliminar/' + ${f.idFactura}}"
 									class="btn btn-xs btn-danger">eliminar</a></td>
 						</tr>
 					</tbody>

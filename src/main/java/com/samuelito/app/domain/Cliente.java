@@ -1,8 +1,8 @@
 package com.samuelito.app.domain;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -63,14 +63,14 @@ public class Cliente {
 	}
 
 	@OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Factura> facturas;
+	private Set<Factura> facturas;
 
 	public void addFactura(Factura factura) {
 		facturas.add(factura);
 	}
 
 	public Cliente() {
-		facturas = new ArrayList<>();
+		facturas = new HashSet<>();
 	}
 
 }

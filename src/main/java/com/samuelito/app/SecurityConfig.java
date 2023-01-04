@@ -1,7 +1,5 @@
 package com.samuelito.app;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,8 +20,8 @@ public class SecurityConfig {
 	@Autowired
 	private LoginSuccessHandler loginSuccessHandler;
 
-	@Autowired
-	private DataSource dataSource;
+	/*@Autowired
+	private DataSource dataSource;*/
 
 	/*
 	 * @Bean public DataSource dataSource() { return new EmbeddedDatabaseBuilder()
@@ -56,7 +54,7 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers("/", "/css/**", "/js/**", "/images/**", "/clientes/listar", "/locale").permitAll()
+				.requestMatchers("/", "/css/**", "/js/**", "/images/**", "/clientes/listar**", "/locale", "/api/clientes/**").permitAll()
 				// .requestMatchers("/clientes/ver/**").hasAnyRole("USER")
 				// .requestMatchers("/uploads/**").hasAnyRole("USER")
 				// .requestMatchers("/*/form/**").hasAnyRole("ADMIN")

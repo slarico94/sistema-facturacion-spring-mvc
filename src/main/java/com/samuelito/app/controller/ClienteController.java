@@ -2,6 +2,7 @@ package com.samuelito.app.controller;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,6 +39,7 @@ import com.samuelito.app.domain.Cliente;
 import com.samuelito.app.domain.service.IClienteService;
 import com.samuelito.app.domain.service.IUploadFileService;
 import com.samuelito.app.util.paginator.PageRender;
+import com.samuelito.app.view.xml.ClienteList;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -74,6 +77,16 @@ public class ClienteController {
 		model.addAttribute("cliente", cliente);
 		model.addAttribute("titulo", "Detalle cliente: " + cliente.getNombre());
 		return "ver";
+	}
+	
+	@GetMapping("/listar-json")
+	public @ResponseBody List<Cliente> listarClientesRest() {
+		return clienteService.getAllClientes();
+	}
+	
+	@GetMapping("/listar-rest")
+	public @ResponseBody ClienteList listarClientesRestXmlJson() {
+		return new ClienteList(clienteService.getAllClientes());
 	}
 
 	@GetMapping("/listar")

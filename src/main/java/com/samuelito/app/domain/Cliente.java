@@ -72,5 +72,9 @@ public class Cliente {
 	public Cliente() {
 		facturas = new HashSet<>();
 	}
+	
+	public String getNombreCompleto() {
+		return getNombre().concat(" ").concat(getApellido());
+	}
 
 }

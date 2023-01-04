@@ -108,6 +108,7 @@ public class ClienteController {
 		}
 		Pageable pageRequest = PageRequest.of(page, 5);
 		Page<Cliente> clientes = clienteService.getAllClientesPageable(pageRequest);
+		
 		PageRender<Cliente> pageRender = new PageRender<>("/clientes/listar", clientes);
 		model.addAttribute("titulo", messageSource.getMessage("text.cliente.listar.titulo", null, locale));
 		model.addAttribute("clientes", clientes);

@@ -47,7 +47,11 @@ public class ClienteServiceImpl implements IClienteService {
 
 	@Override
 	public Page<Cliente> getAllClientesPageable(Pageable pageable) {
-		return clienteRepository.findAll(pageable);
+		Page<Cliente> clientes = clienteRepository.findAll(pageable);
+		
+		//clientes.getContent().forEach(c -> c.getFacturas());
+		
+		return clientes;
 	}
 
 	@Override

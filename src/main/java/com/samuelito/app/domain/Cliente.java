@@ -6,6 +6,9 @@ import java.util.Set;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -52,6 +55,7 @@ public class Cliente {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@Temporal(TemporalType.DATE)
 	@Column(name = "created_at", nullable = false)
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date createdAt;
 
 	@Column(name = "foto")
@@ -62,6 +66,7 @@ public class Cliente {
 		setCreatedAt(new Date());
 	}
 
+	@JsonManagedReference
 	@OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<Factura> facturas;
 
@@ -72,7 +77,7 @@ public class Cliente {
 	public Cliente() {
 		facturas = new HashSet<>();
 	}
-	
+
 	public String getNombreCompleto() {
 		return getNombre().concat(" ").concat(getApellido());
 	}

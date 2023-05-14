@@ -3,22 +3,27 @@ package com.samuelito.app;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import com.samuelito.app.auth.handler.LoginSuccessHandler;
+import com.samuelito.app.auth.filter.JwtAuthenticationFilter;
 
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
+	
+	@Autowired
+	private AuthenticationConfiguration authenticationConfiguration;
 
 	//@Autowired
 	//private BCryptPasswordEncoder passwordEncoder;
 
-	@Autowired
-	private LoginSuccessHandler loginSuccessHandler;
+	/*@Autowired
+	private LoginSuccessHandler loginSuccessHandler;*/
 
 	/*@Autowired
 	private DataSource dataSource;*/
@@ -54,15 +59,18 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers("/", "/css/**", "/js/**", "/images/**", "/clientes/listar**", "/locale", "/api/clientes/**").permitAll()
+				.requestMatchers("/", "/css/**", "/js/**", "/images/**", "/clientes/listar**", "/locale").permitAll()
 				// .requestMatchers("/clientes/ver/**").hasAnyRole("USER")
 				// .requestMatchers("/uploads/**").hasAnyRole("USER")
 				// .requestMatchers("/*/form/**").hasAnyRole("ADMIN")
 				// .requestMatchers("/*/editar/**").hasAnyRole("ADMIN")
 				// .requestMatchers("/*/eliminar/**").hasAnyRole("ADMIN")
 				// .requestMatchers("/factura/**").hasAnyRole("ADMIN")
-				.anyRequest().authenticated()).formLogin().successHandler(loginSuccessHandler).loginPage("/login")
-				.permitAll().and().logout().permitAll().and().exceptionHandling().accessDeniedPage("/error_403");
+				.anyRequest().authenticated())
+		.csrf().disable()
+		.addFilter(new JwtAuthenticationFilter(authenticationConfiguration.getAuthenticationManager()))
+		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		
 
 		return http.build();
 	}
